@@ -1,0 +1,24 @@
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Virtual environments
+venv/
+env/
+.env
+
+# Build directories
+dist/
+build/
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.suo
+*.sln
+
+# OS metadata
+.DS_Store
+Thumbs.db
