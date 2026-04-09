@@ -14,6 +14,7 @@ Los documentos iniciales de análisis arquitectónico y responsabilidades están
 - `04_Esquema_Base_de_Datos_ERD.md` - Esquema de las entidades y relaciones.
 - `05_Flujos_Datos_Criticos.md` - Descripción imperativa de flujos esenciales.
 - `06_Plan_Desarrollo_Recomendado.md` - Plan iterativo y fases.
+- `07_Roles_Requisitos_Escenarios.md` - Roles del sistema, 37 requisitos funcionales, 6 escenarios de uso y 25 requisitos no funcionales.
 
 ## Estado
 v1.0 - En revisión
