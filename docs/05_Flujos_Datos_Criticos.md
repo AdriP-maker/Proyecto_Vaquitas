@@ -1,7 +1,7 @@
 # 📄 Documento 5 — Flujos de Datos Críticos
 
 **Proyecto:** HOFLOC S.A. — Plataforma Web de Gestión Agropecuaria  
-**Versión:** v1.0 | **Fecha:** 2026-04-08
+**Versión:** v1.1 | **Fecha:** 2026-04-10 | *Actualizado con base en las transcripciones de visita de campo (Celeste, Jaseth, Chombo)*
 
 ---
 
@@ -180,3 +180,76 @@ PASO 6 — Consulta por el administrador
       ordenado por ganancia diaria (mejor y peor desempeño).
       Filtro por rango de fechas y por lote (ej. lote "CRÍAS").
 ```
+
+---
+
+## Flujo 4 — Medicamento Aplicado → Período de Retiro → Bloqueo de Leche Comercial
+
+### Actores: Empleado, Sistema, Administrador
+
+```
+PASO 1 — Registro del medicamento
+  ├── Actor: Empleado
+  ├── Equipo: Interfaz
+  └── El empleado (o encargado de lechero) abre el módulo A-07 y selecciona la vaca.
+      Ingresa: nombre del medicamento, ingrediente activo, dosis, fecha de aplicación,
+      período de retiro en días (según etiqueta del producto).
+
+PASO 2 — Cálculo de fecha fin de retiro
+  ├── Actor: Sistema
+  ├── Equipo: Formularios + Base de Datos
+  └── `fecha_fin_retiro = fecha_aplicacion + periodo_retiro_dias`
+      Se guarda en tabla `MedicamentoAplicado`.
+      La vaca queda marcada con estado de retiro activo.
+
+PASO 3 — Indicador de retiro en planilla de ordeño
+  ├── Actor: Sistema
+  ├── Equipo: Interfaz
+  └── En el módulo A-04, la vaca con retiro activo aparece con indicador 🚫.
+      El campo de litros comerciales está deshabilitado.
+      El empleado puede registrar producción destinada a destete (no al garrafón).
+
+PASO 4 — Vencimiento del período de retiro
+  ├── Actor: Sistema (job programado)
+  ├── Equipo: Base de Datos
+  └── Cuando `CURRENT_DATE >= fecha_fin_retiro`, el sistema desactiva automáticamente
+      el bloqueo. La vaca vuelve a aparecer como disponible en la planilla comercial.
+      El dashboard puede mostrar una confirmación: "Vaca [N°] sale de período de retiro hoy."
+```
+
+**Ejemplo real:** Paramastite aplicada por mastitis. Si la etiqueta indica 3 días de retiro, la leche de esa vaca se destina a terneros durante esos 3 días. La finca trata de usar productos sin período de retiro, pero cuando tienen que usarlos, la separación es obligatoria.
+
+---
+
+## Flujo 5 — Alerta de Vacunación → Registro de Aplicación → Cierre de Alerta
+
+### Actores: Administrador, Empleado, Sistema
+
+```
+PASO 1 — Configuración del calendario de vacunación
+  ├── Actor: Administrador
+  ├── Equipo: Interfaz
+  └── El admin define el calendario de vacunas: nombre de la vacuna, fecha programada,
+      si aplica a todo el hato o a animales específicos, y frecuencia de repetición.
+
+PASO 2 — Alerta previa (7 días antes)
+  ├── Actor: Sistema
+  ├── Equipo: Base de Datos + Formularios
+  └── Cuando `fecha_programada - CURRENT_DATE <= 7 días`, el dashboard muestra:
+      "🟡 Vacuna [nombre] programada para [fecha]. [N] animales pendientes."
+
+PASO 3 — Día de la vacunación (sin registrar)
+  ├── Actor: Sistema
+  ├── Equipo: Interfaz
+  └── Si el día de la vacuna llega y no hay registro de aplicación:
+      La alerta escala a 🔴: "Vacuna [nombre] vencida. Acción requerida."
+
+PASO 4 — Registro de aplicación
+  ├── Actor: Empleado/Admin
+  ├── Equipo: Formularios + BD
+  └── Se registra en `VacunaAplicada`: fecha real, dosis, lote del producto,
+      operario responsable. La alerta se cierra.
+      Si hay frecuencia configurada, el sistema programa automáticamente la próxima fecha.
+```
+
+**Motivación real:** La finca perdió 7 animales en un solo día por no vacunar contra rabia a tiempo. Este flujo tiene la máxima prioridad de alertas.

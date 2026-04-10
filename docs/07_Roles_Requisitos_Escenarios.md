@@ -1,7 +1,7 @@
 # 📄 Documento 7 — Roles, Requisitos Funcionales, Escenarios y Requisitos No Funcionales
 
 **Proyecto:** HOFLOC S.A. — Plataforma Web de Gestión Agropecuaria  
-**Versión:** v1.0 | **Fecha:** 2026-04-09  
+**Versión:** v1.1 | **Fecha:** 2026-04-10 | *Actualizado con base en las transcripciones de visita de campo (Celeste, Jaseth, Chombo)*  
 **Referencia:** Derivado de Doc 1–6 del análisis arquitectónico
 
 ---
@@ -23,19 +23,23 @@
 | Módulo | Cliente Externo | Empleado | Administrador |
 |--------|:-:|:-:|:-:|
 | P-01 Página de Inicio | ✅ | ✅ | ✅ |
-| P-02 Catálogo de Productos | ✅ | ✅ | ✅ |
+| P-02 Catálogo de Animales en Venta | ✅ | ✅ | ✅ |
 | P-03 Solicitud de Visita | ✅ | ✅ | ✅ |
 | P-04 Formulario de Contacto | ✅ | ✅ | ✅ |
+| P-05 Posicionamiento / Sobre Nosotros | ✅ | ✅ | ✅ |
+| P-06 ¿Cómo nos conociste? | ✅ | ✅ | ✅ |
 | A-01 Dashboard General | ❌ | ✅ (vista básica) | ✅ (completo) |
 | A-02 Gestión de Hembras | ❌ | ✅ (lectura + edición) | ✅ (CRUD completo) |
-| A-03 Control de Gestación | ❌ | ✅ (registro) | ✅ (CRUD + alertas) |
+| A-03 Control de Gestación y Reproducción | ❌ | ✅ (registro) | ✅ (CRUD + alertas) |
 | A-04 Registro de Ordeño | ❌ | ✅ | ✅ |
 | A-05 Estadísticas de Producción | ❌ | ❌ | ✅ |
-| A-06 Pesaje de Terneros | ❌ | ✅ | ✅ |
-| A-07 Gestión de Proveedores | ❌ | ❌ | ✅ |
-| A-08 Gestión de Usuarios | ❌ | ❌ | ✅ |
-| A-09 Proyecciones del Hato | ❌ | ❌ | ✅ |
-| A-10 Módulo de Reportes | ❌ | ❌ | ✅ |
+| A-06 Nacimientos y Pesaje de Terneros | ❌ | ✅ | ✅ |
+| A-07 Trazabilidad de Medicamentos | ❌ | ✅ (registrar) | ✅ (CRUD + alertas) |
+| A-08 Alertas Sanitarias y Vacunación | ❌ | ✅ (registrar aplicación) | ✅ (configurar + alertas) |
+| A-09 Gestión de Proveedores | ❌ | ❌ | ✅ |
+| A-10 Gestión de Usuarios | ❌ | ❌ | ✅ |
+| A-11 Proyecciones del Hato | ❌ | ❌ | ✅ |
+| A-12 Módulo de Reportes | ❌ | ❌ | ✅ |
 
 ---
 
@@ -237,6 +241,38 @@ El sistema debe mostrar y permitir editar la tabla de proyecciones (total vacas,
 
 ---
 
+### 2.10 Trazabilidad de Medicamentos, Vacunación y Catálogo Público
+
+**RF-38 — Registro de medicamento aplicado**  
+El sistema debe permitir registrar para un animal: nombre del medicamento, ingrediente activo, fecha, dosis y período de retiro en días.  
+*Actor:* Empleado, Administrador | *Módulo:* A-07
+
+**RF-39 — Bloqueo automático de leche durante período de retiro**  
+Mientras un animal tenga un medicamento con período de retiro activo, el sistema debe marcar su producción como NO COMERCIAL y dirigirla al circuito de destete. Al vencer el período, el bloqueo se desactiva automáticamente.  
+*Actor:* Sistema | *Módulos:* A-07, A-04
+
+**RF-40 — Calendario de vacunación**  
+El Administrador debe poder configurar un calendario de vacunas por animal o por hato, con nombre de la vacuna, fecha programada y frecuencia de repetición.  
+*Actor:* Administrador | *Módulo:* A-08
+
+**RF-41 — Alerta de vacuna próxima o vencida**  
+El sistema debe mostrar alertas 🟡 con 7 días de anticipación, y escalar a 🔴 si la fecha pasa sin aplicación registrada.  
+*Actor:* Sistema | *Módulos:* A-08, A-01
+
+**RF-42 — Catálogo de animales en venta con ficha individual**  
+El portal público debe mostrar fichas de animales disponibles para venta con: foto, arete/nombre, padres, producción histórica, peso. Incluye botón de contacto (WhatsApp o correo).  
+*Actor:* Cliente Externo | *Módulo:* P-02
+
+**RF-43 — Registro de fuente del cliente**  
+El sistema debe permitir que al contactar un cliente registre cómo se enteró de la finca: radio, referido, Instagram u otro.  
+*Actor:* Cliente Externo, Administrador | *Módulo:* P-06
+
+**RF-44 — Alerta de reporte al MIDA a los 60 días del ternero**  
+Cuando un ternero registrado en el sistema cumple 60 días, el sistema debe alertar al Administrador para que reporte el animal al MIDA y registre el número oficial asignado.  
+*Actor:* Sistema, Administrador | *Módulo:* A-06
+
+---
+
 ## SECCIÓN 3 — ESCENARIOS DE USO
 
 Los escenarios describen situaciones reales y detalladas de interacción entre actores y el sistema.
@@ -435,10 +471,10 @@ En el paso 3, si el número ya existe, el sistema muestra: *"El número [N°] ya
 | Categoría | Cantidad |
 |-----------|----------|
 | Roles definidos | 3 |
-| Requisitos Funcionales | 37 |
+| Requisitos Funcionales | 44 |
 | Escenarios de uso | 6 |
 | Requisitos No Funcionales | 25 |
-| **Total de ítems documentados** | **71** |
+| **Total de ítems documentados** | **78** |
 
 ---
 

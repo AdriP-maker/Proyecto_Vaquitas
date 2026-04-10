@@ -1,7 +1,7 @@
 # 📄 Documento 4 — Esquema de Base de Datos (ERD Simplificado)
 
 **Proyecto:** HOFLOC S.A. — Plataforma Web de Gestión Agropecuaria  
-**Versión:** v1.0 | **Fecha:** 2026-04-08
+**Versión:** v1.1 | **Fecha:** 2026-04-10 | *Actualizado con base en las transcripciones de visita de campo (Celeste, Jaseth, Chombo)*
 
 ---
 
@@ -13,17 +13,23 @@ Entidad central del sistema. Representa cada hembra del hato.
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INT | PK, AUTO_INCREMENT | Identificador interno |
-| `numero_hembra` | VARCHAR(20) | UNIQUE, NOT NULL | Número identificador de campo (ej. "07", "098", "ABUELA") |
-| `nombre` | VARCHAR(100) | NULL | Nombre asignado (ej. "0448", "ARMANDO CHOCOLATE", "Ceniza") |
-| `estado` | ENUM('LACT','NVIE','SECA','NLEV') | NOT NULL | Estado reproductivo actual |
+| `arete_interno` | VARCHAR(20) | UNIQUE, NOT NULL | Número de arete asignado por la finca al nacer (ej. "07", "098", "ABUELA") |
+| `arete_mida` | VARCHAR(30) | UNIQUE, NULL | Número oficial del sistema MIDA, asignado a los 60 días del ternero. Inmutable una vez asignado. |
+| `nombre` | VARCHAR(100) | NULL | Nombre asignado (ej. "Ceniza", "ARMANDO CHOCOLATE") |
+| `sexo` | ENUM('HEMBRA','MACHO') | NOT NULL | Sexo del animal |
+| `estado` | ENUM('LACT','NVIE','SECA','NLEV') | NOT NULL | Estado reproductivo actual (solo hembras en producción) |
 | `detalle_estado` | VARCHAR(200) | NULL | Texto libre de detalle (ej. "[SIN2] SINCRO 2 USO") |
 | `dias_lactancia` | INT | DEFAULT 0 | Días acumulados en lactancia actual |
 | `dias_abortos` | INT | DEFAULT 0 | Días desde último aborto |
-| `reproductor_id` | INT | FK → Reproductor | Últiimo reproductor asociado |
+| `padre_id` | INT | FK → Animal, NULL | Padre (toro/reproductor si está en el sistema) |
+| `madre_id` | INT | FK → Animal, NULL | Madre del animal |
+| `reproductor_id` | INT | FK → Reproductor | Último reproductor asociado |
 | `potrero_id` | INT | FK → Potrero | Potrero asignado actualmente |
 | `lote_id` | INT | FK → Lote | Lote del animal (ALTA, MANGO, UVERO, CRÍAS, CHINO) |
-| `confirmada_fecha` | DATE | NULL | Fecha de confirmación de preñez (ej. 02/04/26) |
+| `confirmada_fecha` | DATE | NULL | Fecha de confirmación de preñez |
+| `foto_url` | VARCHAR(300) | NULL | Foto del animal (obligatoria al nacer, útil para catálogo de venta) |
 | `activo` | BOOLEAN | DEFAULT TRUE | Para dar de baja sin eliminar |
+| `fecha_nacimiento` | DATE | NULL | Fecha de nacimiento (si nació en la finca) |
 | `fecha_ingreso` | DATE | NOT NULL | Fecha de ingreso al sistema |
 | `created_at` | TIMESTAMP | DEFAULT NOW() | |
 | `updated_at` | TIMESTAMP | ON UPDATE NOW() | |
@@ -140,10 +146,22 @@ Cuentas del panel interno.
 `id | nombre_solicitante | email | telefono | fecha_preferida | num_personas | proposito | estado (PENDIENTE/CONFIRMADA/RECHAZADA) | created_at`
 
 **`MensajeContacto`** — Formulario de contacto público  
-`id | nombre | email | mensaje | leido (boolean) | created_at`
+`id | nombre | email | mensaje | canal (WHATSAPP/CORREO) | leido (boolean) | created_at`
 
 **`ProyeccionHato`** — Tabla de proyecciones mensuales  
 `id | anio | mes | total_vacas | vacas_lactancia | vacas_secar | pct_produccion | partos_vacas | partos_novillas | total_partos`
+
+**`MedicamentoAplicado`** — Registro de medicamentos por animal *(nuevo)*  
+`id | animal_id (FK Animal) | nombre_medicamento | ingrediente_activo | fecha_aplicacion | dosis | unidad_dosis | periodo_retiro_dias | fecha_fin_retiro (calculado) | operario_id (FK Usuario) | observaciones | created_at`
+
+**`CalendarioVacunacion`** — Vacunas programadas por animal o hato *(nuevo)*  
+`id | animal_id (FK Animal, NULL si es vacuna de hato) | nombre_vacuna | fecha_programada | frecuencia_dias | activo | created_at`
+
+**`VacunaAplicada`** — Registro histórico de vacunas aplicadas *(nuevo)*  
+`id | calendario_id (FK CalendarioVacunacion) | animal_id (FK Animal) | fecha_aplicacion | dosis | lote_producto | operario_id (FK Usuario) | observaciones | created_at`
+
+**`FuenteCliente`** — Cómo se enteró el cliente/comprador *(nuevo)*  
+`id | nombre_contacto | canal (RADIO/REFERIDO/INSTAGRAM/OTRO) | detalle_canal | fecha_registro | created_at`
 
 ---
 
