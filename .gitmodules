@@ -1,0 +1,3 @@
+[submodule "private_portal"]
+	path = private_portal
+	url = https://github.com/AdriP-maker/Vaquitas_Privadas.git
